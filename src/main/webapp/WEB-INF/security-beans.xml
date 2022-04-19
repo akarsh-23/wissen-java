@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+<security:http use-expressions="true">
+   <!-- security cfgs -->
+   <security:intercept-url pattern="getUsers"  access="permitAll"  />
+   <security:intercept-url pattern="deleteUser"  access="hasRole('ROLE_ADMIN')"/>
+  <security:intercept-url pattern="/addUser"  access="hasRole('ROLE_ADMIN')"/>
+  <security:intercept-url pattern="/editUser"  access="hasRole('ROLE_ADMIN')"/>
+  
+  <!-- enable BASIC  mode of authentication -->
+ <!--  <security:http-basic/> -->
+ <security:form-login/>
+  <security:logout />
+  <security:remember-me/>
+ <security:access-denied-handler error-page="/access-denied.jsp"/>
+ 
+ <security:session-management >
+      <security:concurrency-control  error-if-maximum-exceeded="true"  max-sessions="2"/>
+ </security:session-management>
+
+</security:http>
+
+
+<security:authentication-manager>   
+    <security:authentication-provider>
+       <security:jdbc-user-service data-source-ref="hkds"  
+                         users-by-username-query="SELECT UNAME,PWD,STATUS FROM USERS WHERE UNAME=?"
+                         authorities-by-username-query="SELECT UNAME,ROLE FROM USER_ROLES WHERE UNAME=?"/>
+    </security:authentication-provider>
+</security:authentication-manager>
+</beans>
